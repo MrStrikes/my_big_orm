@@ -43,4 +43,5 @@ $selectUsers = new MBOQuery('user');
 $selectUsers->select('id');
 $selectUsers->where('firstname = Maxime');
 $selectUsers->orderBy('id');
+$users = $selectUsers->execute();
 ```
