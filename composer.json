@@ -1,0 +1,10 @@
+{
+    "name": "strikes/orm",
+    "description": "A simple huge orm",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-0": {"": "src/"}
+    }
+}
