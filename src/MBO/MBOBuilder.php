@@ -26,19 +26,37 @@ class MBOBuilder
 
     public function DELETE(...$deleted)
     {
-        $this->setDelete(array_push($this->getDelete(), $deleted));
+        $actualDelete = $this->getDelete();
+        foreach ($deleted as $item) {
+            if (in_array($item, $this->getCol())) {
+                $actualDelete[] = $item;
+            }
+        }
+        $this->setDelete($actualDelete);
         return $this;
     }
 
     public function UPDATE(...$updated)
     {
-        $this->setInsert(array_push($this->getUpdate(), $updated));
+        $actualUpdate = $this->getUpdate();
+        foreach ($updated as $item) {
+            if (in_array($item, $this->getCol())) {
+                $actualUpdate[] = $item;
+            }
+        }
+        $this->setUpdate($actualUpdate);
         return $this;
     }
 
     public function INSERT(...$inserted)
     {
-        $this->setInsert(array_push($this->getInsert(), $inserted));
+        $actualInsert = $this->getSelect();
+        foreach ($inserted as $item) {
+            if (in_array($item, $this->getCol())) {
+                $actualInsert[] = $item;
+            }
+        }
+        $this->setInsert($actualInsert);
         return $this;
     }
 
