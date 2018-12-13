@@ -1,7 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Utilisateur
- * Date: 13/12/2018
- * Time: 14:30
- */
+
+require_once("vendor/autoload.php");
+
+use MBO\DBManager;
+
+global $configPath;
+$configPath = "config/config.json";
+
+$a = new DBManager($configPath);
