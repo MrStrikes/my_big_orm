@@ -8,8 +8,8 @@ class MBOBuilder
 
     public function SELECT(...$selected)
     {
-        $this->setSelect(array_push($select, $selected));
-        var_dump($select);
+        $this->setSelect(array_push($this->getSelect(), $selected));
+        var_dump($this->getSelect());
     }
 
     public function getSelect()
