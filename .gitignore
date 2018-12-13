@@ -2,5 +2,4 @@
 .vscode
 vendor/
 config/config.json
-test/*
-!test/.gitkeep
+src/test/
