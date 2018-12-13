@@ -14,7 +14,13 @@ class MBOBuilder
 
     public function SELECT(...$selected)
     {
-        $this->setSelect(array_push($this->getSelect(), $selected));
+        $actualSelect = $this->getSelect();
+        foreach($selected as $item) {
+            if (in_array($item, $this->getCol())) {
+                $actualSelect[] = $item;
+            }
+        }
+        $this->setSelect($actualSelect);
         return $this;
     }
 
