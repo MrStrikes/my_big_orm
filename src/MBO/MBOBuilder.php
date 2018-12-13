@@ -26,13 +26,13 @@ class MBOBuilder
 
     public function UPDATE(...$updated)
     {
-        $this->setInsert(array_push($this->getUpdate(), $selected));
+        $this->setInsert(array_push($this->getUpdate(), $updated));
         return $this;
     }
 
     public function INSERT(...$inserted)
     {
-        $this->setInsert(array_push($this->getInsert(), $inserte));
+        $this->setInsert(array_push($this->getInsert(), $inserted));
         return $this;
     }
 
