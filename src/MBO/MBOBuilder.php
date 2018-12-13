@@ -21,7 +21,7 @@ class MBOBuilder
     public function DELETE(...$deleted)
     {
         $this->setDelete(array_push($this->getDelete(), $deleted));
-        var_dump($this->getSelect());
+        return $this;
     }
 
     public function UPDATE(...$updated)
