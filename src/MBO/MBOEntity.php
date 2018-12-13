@@ -2,7 +2,7 @@
 
 namespace MBO;
 
-class MBOEntity
+class MBOEntity extends MBOBuilder
 {
 
 }
