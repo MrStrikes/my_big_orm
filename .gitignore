@@ -2,3 +2,4 @@
 .vscode
 vendor/
 config/config.json
+client.php
