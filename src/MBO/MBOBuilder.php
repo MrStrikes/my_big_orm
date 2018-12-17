@@ -2,7 +2,7 @@
 
 namespace MBO;
 
-abstract class MBOBuilder
+class MBOBuilder extends DBManager
 {
     private $select = [];
 
@@ -12,6 +12,48 @@ abstract class MBOBuilder
 
     private $insert = [];
 
+    private $tableName = "";
+
+    public function buildQuery()
+    {
+        var_dump($this->getSelect());
+        if (!empty($select)) {
+            var_dump("IN SELECT");
+            buildSelect();
+        } else if (!empty($insert)) {
+            buildInsert();
+        } else if (!empty($update)) {
+            buildUpdate();
+        } else if (!empty($delete)) {
+            buildDelete();
+        }
+    }
+
+    public function buildSelect()
+    {
+        $stmt = "SELECT ";
+        foreach ($this->getSelect() as $selects) {
+            $stmt .= ":" . $selects . ",";
+        }
+        $stm = rtrim($stmt, ',');
+        var_dump($stmt);
+    }
+
+    public function buildInsert(): MBOBuilder
+    {
+
+    }
+
+    public function buildUpdate(): MBOBuilder
+    {
+
+    }
+
+    public function buildDelete(): MBOBuilder
+    {
+
+    }
+
     public function SELECT(...$selected): MBOBuilder
     {
         $actualSelect = $this->getSelect();
@@ -19,11 +61,6 @@ abstract class MBOBuilder
             if (in_array($item, $this->getCol())) {
                 $actualSelect[] = $item;
             }
-        }
-        if (empty($actualSelect)) {
-            $this->setSelect("*");
-        } else {
-            $this->setSelect($actualSelect);
         }
 
         return $this;
@@ -106,6 +143,17 @@ abstract class MBOBuilder
     public function setInsert($insert)
     {
         $this->insert = $insert;
+        return $this;
+    }
+
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
         return $this;
     }
 }
