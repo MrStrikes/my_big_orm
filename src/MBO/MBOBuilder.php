@@ -12,7 +12,7 @@ abstract class MBOBuilder
 
     private $insert = [];
 
-    public function SELECT(...$selected)
+    public function SELECT(...$selected): MBOBuilder
     {
         $actualSelect = $this->getSelect();
         foreach ($selected as $item) {
@@ -29,7 +29,7 @@ abstract class MBOBuilder
         return $this;
     }
 
-    public function DELETE(...$deleted)
+    public function DELETE(...$deleted): MBOBuilder
     {
         $actualDelete = $this->getDelete();
         foreach ($deleted as $item) {
@@ -37,11 +37,11 @@ abstract class MBOBuilder
                 $actualDelete[] = $item;
             }
         }
-        $this->setDelete($actualDelete);
-        return $this;
+        return $this->setDelete($actualDelete);
+
     }
 
-    public function UPDATE(...$updated)
+    public function UPDATE(...$updated): MBOBuilder
     {
         $actualUpdate = $this->getUpdate();
         foreach ($updated as $item) {
@@ -49,8 +49,8 @@ abstract class MBOBuilder
                 $actualUpdate[] = $item;
             }
         }
-        $this->setUpdate($actualUpdate);
-        return $this;
+        return $this->setUpdate($actualUpdate);
+
     }
 
     public function INSERT(...$inserted)
@@ -61,8 +61,8 @@ abstract class MBOBuilder
                 $actualInsert[] = $item;
             }
         }
-        $this->setInsert($actualInsert);
-        return $this;
+        return $this->setInsert($actualInsert);
+
     }
 
     public function getSelect()
