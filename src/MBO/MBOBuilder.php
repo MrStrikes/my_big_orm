@@ -53,8 +53,8 @@ abstract class MBOBuilder
     {
         $actualInsert = $this->getSelect();
         foreach ($inserted as $item) {
-            if (in_array($item, $this->getCol())) {
-                $actualInsert[] = $item;
+            if (in_array($item[0], $this->getCol())) {
+                $actualInsert[] = [$item[0], $item[1]];
             }
         }
         return $this->setInsert($actualInsert);
