@@ -12,8 +12,6 @@ class MBOBuilder extends DBManager
 
     private $insert = [];
 
-    private $tableName = "";
-
     public function __construct()
     {
         parent::__construct();
@@ -167,16 +165,6 @@ class MBOBuilder extends DBManager
     {
         $this->insert = $insert;
         return $this;
-    }
-
-    public function getTableName()
-    {
-        return $this->tableName;
-    }
-
-    public function setTableName($tableName)
-    {
-        $this->tableName = $tableName;
     }
 
     public function getWhere(): array
