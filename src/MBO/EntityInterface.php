@@ -2,7 +2,8 @@
 
 namespace MBO;
 
-interface EntityInterface {
+interface EntityInterface
+{
 
     public function getCol();
 

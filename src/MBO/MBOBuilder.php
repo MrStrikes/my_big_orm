@@ -2,7 +2,7 @@
 
 namespace MBO;
 
-class MBOBuilder
+abstract class MBOBuilder
 {
     private $select = [];
 
@@ -15,12 +15,17 @@ class MBOBuilder
     public function SELECT(...$selected)
     {
         $actualSelect = $this->getSelect();
-        foreach($selected as $item) {
+        foreach ($selected as $item) {
             if (in_array($item, $this->getCol())) {
                 $actualSelect[] = $item;
             }
         }
-        $this->setSelect($actualSelect);
+        if (empty($actualSelect)) {
+            $this->setSelect("*");
+        } else {
+            $this->setSelect($actualSelect);
+        }
+
         return $this;
     }
 
