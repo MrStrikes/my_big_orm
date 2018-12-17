@@ -12,6 +12,8 @@ abstract class MBOBuilder
 
     private $insert = [];
 
+    private $where = [];
+
     public function SELECT(...$selected): MBOBuilder
     {
         $actualSelect = $this->getSelect();
@@ -20,12 +22,6 @@ abstract class MBOBuilder
                 $actualSelect[] = $item;
             }
         }
-        if (empty($actualSelect)) {
-            $this->setSelect("*");
-        } else {
-            $this->setSelect($actualSelect);
-        }
-
         return $this;
     }
 
@@ -53,7 +49,7 @@ abstract class MBOBuilder
 
     }
 
-    public function INSERT(...$inserted)
+    public function INSERT(...$inserted) : MBOBuilder
     {
         $actualInsert = $this->getSelect();
         foreach ($inserted as $item) {
@@ -65,12 +61,23 @@ abstract class MBOBuilder
 
     }
 
+    public function WHERE(...$conditions) : MBOBuilder
+    {
+        $actualWhere = $this->getWhere();
+        foreach ($conditions as $condition) {
+            if (in_array($condition[0], $this->getCol())) {
+                $actualWhere[] = [$condition[0], $condition[1]];
+            }
+        }
+        return $this->setWhere($actualWhere);
+    }
+
     public function getSelect()
     {
         return $this->select;
     }
 
-    public function setSelect($select)
+    public function setSelect($select) : MBOBuilder
     {
         $this->select = $select;
         return $this;
@@ -81,7 +88,7 @@ abstract class MBOBuilder
         return $this->delete;
     }
 
-    public function setDelete($delete)
+    public function setDelete($delete) : MBOBuilder
     {
         $this->delete = $delete;
         return $this;
@@ -92,7 +99,7 @@ abstract class MBOBuilder
         return $this->update;
     }
 
-    public function setUpdate($update)
+    public function setUpdate($update) : MBOBuilder
     {
         $this->update = $update;
         return $this;
@@ -103,9 +110,20 @@ abstract class MBOBuilder
         return $this->insert;
     }
 
-    public function setInsert($insert)
+    public function setInsert($insert) : MBOBuilder
     {
         $this->insert = $insert;
+        return $this;
+    }
+
+    public function getWhere(): array
+    {
+        return $this->where;
+    }
+
+    public function setWhere(array $where): MBOBuilder
+    {
+        $this->where = $where;
         return $this;
     }
 }
