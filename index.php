@@ -8,5 +8,4 @@ $GLOBALS['config'] = "./config/config.json";
 
 $clients = new clients();
 $clients->SELECT('id', 'lastname', 'firstname', 'address', 'city');
-$clients->setTableName("User");
-$clients->buildQuery();
+var_dump($clients->buildQuery());
