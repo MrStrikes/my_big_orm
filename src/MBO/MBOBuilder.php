@@ -53,6 +53,7 @@ class MBOBuilder extends DBManager
     {
 
     }
+    private $where = [];
 
     public function SELECT(...$selected): MBOBuilder
     {
@@ -62,7 +63,6 @@ class MBOBuilder extends DBManager
                 $actualSelect[] = $item;
             }
         }
-
         return $this;
     }
 
@@ -90,16 +90,27 @@ class MBOBuilder extends DBManager
 
     }
 
-    public function INSERT(...$inserted)
+    public function INSERT(...$inserted): MBOBuilder
     {
         $actualInsert = $this->getSelect();
         foreach ($inserted as $item) {
-            if (in_array($item, $this->getCol())) {
-                $actualInsert[] = $item;
+            if (in_array($item[0], $this->getCol())) {
+                $actualInsert[] = [$item[0], $item[1]];
             }
         }
         return $this->setInsert($actualInsert);
 
+    }
+
+    public function WHERE(...$conditions): MBOBuilder
+    {
+        $actualWhere = $this->getWhere();
+        foreach ($conditions as $condition) {
+            if (in_array($condition[0], $this->getCol())) {
+                $actualWhere[] = [$condition[0], $condition[1]];
+            }
+        }
+        return $this->setWhere($actualWhere);
     }
 
     public function getSelect()
@@ -107,7 +118,7 @@ class MBOBuilder extends DBManager
         return $this->select;
     }
 
-    public function setSelect($select)
+    public function setSelect($select): MBOBuilder
     {
         $this->select = $select;
         return $this;
@@ -118,7 +129,7 @@ class MBOBuilder extends DBManager
         return $this->delete;
     }
 
-    public function setDelete($delete)
+    public function setDelete($delete): MBOBuilder
     {
         $this->delete = $delete;
         return $this;
@@ -129,7 +140,7 @@ class MBOBuilder extends DBManager
         return $this->update;
     }
 
-    public function setUpdate($update)
+    public function setUpdate($update): MBOBuilder
     {
         $this->update = $update;
         return $this;
@@ -140,7 +151,7 @@ class MBOBuilder extends DBManager
         return $this->insert;
     }
 
-    public function setInsert($insert)
+    public function setInsert($insert): MBOBuilder
     {
         $this->insert = $insert;
         return $this;
@@ -154,6 +165,16 @@ class MBOBuilder extends DBManager
     public function setTableName($tableName)
     {
         $this->tableName = $tableName;
+    }
+
+    public function getWhere(): array
+    {
+        return $this->where;
+    }
+
+    public function setWhere(array $where): MBOBuilder
+    {
+        $this->where = $where;
         return $this;
     }
 }
