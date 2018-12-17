@@ -21,16 +21,14 @@ class MBOBuilder extends DBManager
 
     public function buildQuery()
     {
-        var_dump($this->getSelect());
-        if (!empty($select)) {
-            var_dump("IN SELECT");
-            buildSelect();
-        } else if (!empty($insert)) {
-            buildInsert();
-        } else if (!empty($update)) {
-            buildUpdate();
-        } else if (!empty($delete)) {
-            buildDelete();
+        if (!empty($this->getSelect())) {
+            $this->buildSelect();
+        } else if (!empty($this->getInsert())) {
+            $this->buildInsert();
+        } else if (!empty($this->getUpdate()())) {
+            $this->buildUpdate();
+        } else if (!empty($this->getDelete()())) {
+            $this->pdobuildDelete();
         }
     }
 
@@ -38,10 +36,19 @@ class MBOBuilder extends DBManager
     {
         $stmt = "SELECT ";
         foreach ($this->getSelect() as $selects) {
-            $stmt .= ":" . $selects . ",";
+            $stmt .= ":" . $selects . ", ";
         }
-        $stm = rtrim($stmt, ',');
-        var_dump($stmt);
+        $stm = rtrim($stmt, ', ');
+        $stm .= " FROM :tableName";
+        $req = $this->getPdo();
+        $request = $req->prepare($stm);
+        foreach ($this->getSelect() as $selected) {
+            $request->bindParam(":$selected", $selected);
+        }
+        $request->bindParam(':tableName', $this->getTableName());
+        $request->execute();
+        $result = $request->fetchAll();
+        var_dump($result);
     }
 
     public function buildInsert(): MBOBuilder
