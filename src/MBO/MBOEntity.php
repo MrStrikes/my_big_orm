@@ -2,7 +2,7 @@
 
 namespace MBO;
 
-class MBOEntity extends MBOBuilder
+abstract class MBOEntity extends MBOBuilder implements EntityInterface
 {
 
 }

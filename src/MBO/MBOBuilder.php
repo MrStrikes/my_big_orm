@@ -2,7 +2,10 @@
 
 namespace MBO;
 
-class MBOBuilder
+
+use MBO\EntityInterface;
+
+abstract class MBOBuilder
 {
     private $select = [];
 
@@ -12,7 +15,7 @@ class MBOBuilder
 
     private $insert = [];
 
-    public function SELECT(...$selected)
+    public function SELECT(...$selected): MBOBuilder
     {
         $actualSelect = $this->getSelect();
         foreach($selected as $item) {
@@ -20,11 +23,11 @@ class MBOBuilder
                 $actualSelect[] = $item;
             }
         }
-        $this->setSelect($actualSelect);
-        return $this;
+        return $this->setSelect($actualSelect);
+
     }
 
-    public function DELETE(...$deleted)
+    public function DELETE(...$deleted): MBOBuilder
     {
         $actualDelete = $this->getDelete();
         foreach ($deleted as $item) {
@@ -32,11 +35,11 @@ class MBOBuilder
                 $actualDelete[] = $item;
             }
         }
-        $this->setDelete($actualDelete);
-        return $this;
+        return $this->setDelete($actualDelete);
+
     }
 
-    public function UPDATE(...$updated)
+    public function UPDATE(...$updated): MBOBuilder
     {
         $actualUpdate = $this->getUpdate();
         foreach ($updated as $item) {
@@ -44,8 +47,8 @@ class MBOBuilder
                 $actualUpdate[] = $item;
             }
         }
-        $this->setUpdate($actualUpdate);
-        return $this;
+        return $this->setUpdate($actualUpdate);
+
     }
 
     public function INSERT(...$inserted)
@@ -56,8 +59,8 @@ class MBOBuilder
                 $actualInsert[] = $item;
             }
         }
-        $this->setInsert($actualInsert);
-        return $this;
+        return $this->setInsert($actualInsert);
+
     }
 
     public function getSelect()
