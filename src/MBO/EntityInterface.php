@@ -7,4 +7,6 @@ interface EntityInterface
 
     public function getCol();
 
+    public function getTableName();
+
 }

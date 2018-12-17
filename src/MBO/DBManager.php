@@ -7,10 +7,10 @@ class DBManager
 {
     private $pdo;
 
-    public function __construct(string $configPath)
+    public function __construct()
     {
 
-        $params = json_decode(file_get_contents($configPath), true);
+        $params = json_decode(file_get_contents($GLOBALS['config']), true);
         $address = $params['db']['host'];
         if ($params['db']['port']) {
             $address .= ':' . $params['db']['port'];

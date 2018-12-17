@@ -14,6 +14,11 @@ class MBOBuilder extends DBManager
 
     private $tableName = "";
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function buildQuery()
     {
         var_dump($this->getSelect());
