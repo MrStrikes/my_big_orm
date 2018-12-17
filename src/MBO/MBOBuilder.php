@@ -68,7 +68,7 @@ class MBOBuilder extends DBManager
                 $actualSelect[] = $item;
             }
         }
-        return $this;
+        return $this->setSelect($actualSelect);
     }
 
     public function DELETE(...$deleted): MBOBuilder
