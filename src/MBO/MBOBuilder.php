@@ -46,7 +46,30 @@ class MBOBuilder extends DBManager
 
     public function buildInsert() : \PDOStatement
     {
-
+        $cols = array_flip($this->getCol());
+        foreach ($cols as $key => $value) {
+            $cols[$key] = null;
+        }
+        foreach ($this->getInsert() as $key => $value) {
+            $cols[$value[0]] = $value[1];
+        }
+        $stmt = 'INSERT INTO ' . $this->getTableName() . ' ';
+        $sqlKey = '(';
+        $sqlValue = '(';
+        foreach ($cols as $key => $value) {
+            $sqlKey .= "`$key`, ";
+            $sqlValue .= ":$key, ";
+        }
+        $sqlKey = rtrim($sqlKey, ', ');
+        $sqlKey .= ') VALUES ';
+        $sqlValue = rtrim($sqlValue, ', ');
+        $sqlValue .= ')';
+        $req = $this->getPdo();
+        $a = $req->prepare($stmt . $sqlKey . $sqlValue);
+        foreach ($cols as $key => &$value) {
+            $a->bindParam(":$key", $value);
+        }
+        return $a;
     }
 
     public function buildUpdate() : \PDOStatement
