@@ -47,8 +47,12 @@ class MBOBuilder extends DBManager
         }
         $stm = rtrim($stmt, ', ');
         $stm .= ' FROM ' . $this->getTableName();
+        $where = $this->buildWhere();
+        $stm = $stm . ' ' . $where[0];
         $req = $this->getPdo();
-        return $req->prepare($stm);
+        $request = $req->prepare($stm);
+        $request = $this->bindWhere($request, $where);
+        return $request;
     }
 
     public function buildInsert() : \PDOStatement
@@ -88,6 +92,26 @@ class MBOBuilder extends DBManager
     public function buildDelete() : \PDOStatement
     {
 
+    }
+
+    private function buildWhere() : array
+    {
+        $stmt = 'WHERE ';
+        $value = [];
+        foreach ($this->getWhere() as $index => $condition) {
+            $stmt .= $condition[0] . ' ' . $condition[1] . ' :' . $index . ' AND ';
+            $value[$index] = $condition[2];
+        }
+        $stmt = rtrim($stmt, 'AND ');
+        return [$stmt, $value];
+    }
+
+    private function bindWhere($pdo, $where): \PDOStatement
+    {
+        foreach ($where[1] as $key => $value) {
+            $pdo->bindParam(":$key", $value);
+        }
+        return $pdo;
     }
 
     public function execute($fetchStyle = 2)
@@ -152,7 +176,7 @@ class MBOBuilder extends DBManager
         $actualWhere = $this->getWhere();
         foreach ($conditions as $condition) {
             if ($this->isCol($condition[0])) {
-                $actualWhere[] = [$condition[0], $condition[1]];
+                $actualWhere[] = [$condition[0], $condition[1], $condition[2]];
             }
         }
         return $this->setWhere($actualWhere);
