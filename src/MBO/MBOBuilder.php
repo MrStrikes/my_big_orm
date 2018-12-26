@@ -12,14 +12,17 @@ class MBOBuilder extends DBManager
 
     private $insert = [];
 
+    private $where = [];
+
+    private $query;
+
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function buildQuery()
+    public function buildQuery() : MBOBuilder
     {
-        $query = '';
         if (!empty($this->getSelect())) {
             $query = $this->buildSelect();
         } else if (!empty($this->getInsert())) {
@@ -28,8 +31,12 @@ class MBOBuilder extends DBManager
             $query = $this->buildUpdate();
         } else if (!empty($this->getDelete())) {
             $query = $this->buildDelete();
+        } else {
+            return $this;
+            //TODO LOG
         }
-        return $query;
+        $this->setQuery($query);
+        return $this;
     }
 
     public function buildSelect() : \PDOStatement
@@ -53,7 +60,7 @@ class MBOBuilder extends DBManager
         foreach ($this->getInsert() as $key => $value) {
             $cols[$value[0]] = $value[1];
         }
-        $stmt = 'INSERT INTO ' . $this->getTableName() . ' ';
+        $stmt = 'INSERT INTO `' . $this->getTableName() . '` ';
         $sqlKey = '(';
         $sqlValue = '(';
         foreach ($cols as $key => $value) {
@@ -65,15 +72,16 @@ class MBOBuilder extends DBManager
         $sqlValue = rtrim($sqlValue, ', ');
         $sqlValue .= ')';
         $req = $this->getPdo();
-        $a = $req->prepare($stmt . $sqlKey . $sqlValue);
+        $request = $req->prepare($stmt . $sqlKey . $sqlValue);
         foreach ($cols as $key => &$value) {
-            $a->bindParam(":$key", $value);
+            $request->bindParam(":$key", $value);
         }
-        return $a;
+        return $request;
     }
 
     public function buildUpdate() : \PDOStatement
     {
+        $stmt = 'UPDATE `' . $this->getTableName() . '` SET ';
 
     }
 
@@ -81,13 +89,24 @@ class MBOBuilder extends DBManager
     {
 
     }
-    private $where = [];
+
+    public function execute($fetchStyle = 2)
+    {
+        $query = $this->getQuery();
+        $bool = $query->execute();
+        if (!$bool) {
+            /////TODO log
+        } else {
+            return $query->fetchAll($fetchStyle);
+        }
+
+    }
 
     public function SELECT(...$selected): MBOBuilder
     {
         $actualSelect = $this->getSelect();
         foreach ($selected as $item) {
-            if (in_array($item, $this->getCol())) {
+            if ($this->isCol($item) || $item === '*') {
                 $actualSelect[] = $item;
             }
         }
@@ -98,31 +117,29 @@ class MBOBuilder extends DBManager
     {
         $actualDelete = $this->getDelete();
         foreach ($deleted as $item) {
-            if (in_array($item, $this->getCol())) {
+            if ($this->isCol($item)) {
                 $actualDelete[] = $item;
             }
         }
         return $this->setDelete($actualDelete);
-
     }
 
     public function UPDATE(...$updated): MBOBuilder
     {
         $actualUpdate = $this->getUpdate();
         foreach ($updated as $item) {
-            if (in_array($item, $this->getCol())) {
+            if ($this->isCol($item) || $item === '*') {
                 $actualUpdate[] = $item;
             }
         }
         return $this->setUpdate($actualUpdate);
-
     }
 
     public function INSERT(...$inserted): MBOBuilder
     {
         $actualInsert = $this->getSelect();
         foreach ($inserted as $item) {
-            if (in_array($item[0], $this->getCol())) {
+            if ($this->isCol($item[0])) {
                 $actualInsert[] = [$item[0], $item[1]];
             }
         }
@@ -134,14 +151,19 @@ class MBOBuilder extends DBManager
     {
         $actualWhere = $this->getWhere();
         foreach ($conditions as $condition) {
-            if (in_array($condition[0], $this->getCol())) {
+            if ($this->isCol($condition[0])) {
                 $actualWhere[] = [$condition[0], $condition[1]];
             }
         }
         return $this->setWhere($actualWhere);
     }
 
-    public function getSelect()
+    private function isCol($item): bool
+    {
+        return in_array($item, $this->getCol());
+    }
+
+    public function getSelect(): array
     {
         return $this->select;
     }
@@ -152,7 +174,7 @@ class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function getDelete()
+    public function getDelete(): array
     {
         return $this->delete;
     }
@@ -163,7 +185,7 @@ class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function getUpdate()
+    public function getUpdate(): array
     {
         return $this->update;
     }
@@ -174,7 +196,7 @@ class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function getInsert()
+    public function getInsert(): array
     {
         return $this->insert;
     }
@@ -193,6 +215,17 @@ class MBOBuilder extends DBManager
     public function setWhere(array $where): MBOBuilder
     {
         $this->where = $where;
+        return $this;
+    }
+
+    public function getQuery(): \PDOStatement
+    {
+        return $this->query;
+    }
+
+    public function setQuery(\PDOStatement $query): MBOBuilder
+    {
+        $this->query = $query;
         return $this;
     }
 }
