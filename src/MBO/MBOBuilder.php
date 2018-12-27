@@ -51,8 +51,7 @@ class MBOBuilder extends DBManager
         $stm = $stm . ' ' . $where[0];
         $req = $this->getPdo();
         $request = $req->prepare($stm);
-        $request = $this->bindWhere($request, $where);
-        return $request;
+        return $this->bindWhere($request, $where);
     }
 
     public function buildInsert() : \PDOStatement
@@ -69,7 +68,7 @@ class MBOBuilder extends DBManager
         $sqlValue = '(';
         foreach ($cols as $key => $value) {
             $sqlKey .= "`$key`, ";
-            $sqlValue .= ":$key, ";
+            $sqlValue .= ":in$key, ";
         }
         $sqlKey = rtrim($sqlKey, ', ');
         $sqlKey .= ') VALUES ';
@@ -78,7 +77,7 @@ class MBOBuilder extends DBManager
         $req = $this->getPdo();
         $request = $req->prepare($stmt . $sqlKey . $sqlValue);
         foreach ($cols as $key => &$value) {
-            $request->bindParam(":$key", $value);
+            $request->bindParam(":in$key", $value);
         }
         return $request;
     }
@@ -86,7 +85,17 @@ class MBOBuilder extends DBManager
     public function buildUpdate() : \PDOStatement
     {
         $stmt = 'UPDATE `' . $this->getTableName() . '` SET ';
-
+        foreach ($this->getUpdate() as $index => $update) {
+            $stmt .= $update[0] . ' = :up' . $index . ' , ';
+        }
+        $stmt = rtrim($stmt, ' , ');
+        $where = $this->buildWhere();
+        $req = $this->getPdo();
+        $request = $req->prepare("$stmt $where[0]");
+        foreach ($this->getUpdate() as $index => $update) {
+            $request->bindParam(":up$index", $update[1]);
+        }
+        return $this->bindWhere($request, $where);
     }
 
     public function buildDelete() : \PDOStatement
@@ -99,7 +108,7 @@ class MBOBuilder extends DBManager
         $stmt = 'WHERE ';
         $value = [];
         foreach ($this->getWhere() as $index => $condition) {
-            $stmt .= $condition[0] . ' ' . $condition[1] . ' :' . $index . ' AND ';
+            $stmt .= $condition[0] . ' ' . $condition[1] . ' :wh' . $index . ' AND ';
             $value[$index] = $condition[2];
         }
         $stmt = rtrim($stmt, 'AND ');
@@ -109,7 +118,7 @@ class MBOBuilder extends DBManager
     private function bindWhere($pdo, $where): \PDOStatement
     {
         foreach ($where[1] as $key => $value) {
-            $pdo->bindParam(":$key", $value);
+            $pdo->bindParam(":wh$key", $value);
         }
         return $pdo;
     }
@@ -152,7 +161,7 @@ class MBOBuilder extends DBManager
     {
         $actualUpdate = $this->getUpdate();
         foreach ($updated as $item) {
-            if ($this->isCol($item) || $item === '*') {
+            if ($this->isCol($item[0]) || $item === '*') {
                 $actualUpdate[] = $item;
             }
         }
