@@ -6,7 +6,7 @@ class MBOBuilder extends DBManager
 {
     private $select = [];
 
-    private $delete = [];
+    private $delete = false;
 
     private $update = [];
 
@@ -100,7 +100,11 @@ class MBOBuilder extends DBManager
 
     public function buildDelete() : \PDOStatement
     {
-
+        $stmt = 'DELETE FROM `' . $this->getTableName() . '`';
+        $where = $this->buildWhere();
+        $req = $this->getPdo();
+        $request = $req->prepare("$stmt $where[0]");
+        return $this->bindWhere($request, $where);
     }
 
     private function buildWhere() : array
@@ -146,15 +150,9 @@ class MBOBuilder extends DBManager
         return $this->setSelect($actualSelect);
     }
 
-    public function DELETE(...$deleted): MBOBuilder
+    public function DELETE(bool $bool): MBOBuilder
     {
-        $actualDelete = $this->getDelete();
-        foreach ($deleted as $item) {
-            if ($this->isCol($item)) {
-                $actualDelete[] = $item;
-            }
-        }
-        return $this->setDelete($actualDelete);
+        return $this->setDelete($bool);
     }
 
     public function UPDATE(...$updated): MBOBuilder
@@ -207,12 +205,12 @@ class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function getDelete(): array
+    public function getDelete(): bool
     {
         return $this->delete;
     }
 
-    public function setDelete($delete): MBOBuilder
+    public function setDelete(bool $delete): MBOBuilder
     {
         $this->delete = $delete;
         return $this;
