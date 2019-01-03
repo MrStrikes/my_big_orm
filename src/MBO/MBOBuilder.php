@@ -21,6 +21,19 @@ class MBOBuilder extends DBManager
         parent::__construct();
     }
 
+    /**
+     * @return $this
+     */
+    public function clear() : MBOBuilder {
+        $this
+            ->setSelect([])
+            ->setDelete(false)
+            ->setUpdate([])
+            ->setInsert([])
+            ->setWhere([]);
+        return $this;
+    }
+
     public function buildQuery() : MBOBuilder
     {
         if (!empty($this->getSelect())) {
