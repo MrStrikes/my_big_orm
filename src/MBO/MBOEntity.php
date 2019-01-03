@@ -9,4 +9,13 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         parent::__construct();
     }
 
+    public function getById($id, $fetchStyle = 2) {
+        $this
+            ->clear()
+            ->SELECT('*')
+            ->WHERE(['id', '=', $id])
+            ->buildQuery();
+        return $this->execute($fetchStyle);
+    }
+
 }
