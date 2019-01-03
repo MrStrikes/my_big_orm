@@ -331,7 +331,7 @@ class MBOBuilder extends DBManager
         return $this->orderBy;
     }
 
-    public function setOrderBy(array $orderBy): array
+    public function setOrderBy(array $orderBy): MBOBuilder
     {
         $this->orderBy = $orderBy;
         return $this;
