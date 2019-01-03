@@ -18,6 +18,8 @@ class MBOBuilder extends DBManager
 
     private $query;
 
+    private $count;
+
     public function __construct()
     {
         parent::__construct();
@@ -57,8 +59,13 @@ class MBOBuilder extends DBManager
     public function buildSelect() : \PDOStatement
     {
         $stmt = "SELECT ";
-        foreach ($this->getSelect() as $selects) {
-            $stmt .= $selects . ", ";
+        if (!empty($this->getCount())) {
+            $stmt .= "COUNT(".$this->getCount().")";
+        }
+        if (empty($this->getCount())) {
+            foreach ($this->getSelect() as $selects) {
+                $stmt .= $selects . ", ";
+            }
         }
         $stm = rtrim($stmt, ', ');
         $stm .= ' FROM ' . $this->getTableName();
@@ -235,6 +242,19 @@ class MBOBuilder extends DBManager
         return $this->setOrderBy($actualOrderBy);
     }
 
+    public function COUNT($colName = "*", $distinct = false): MBOBuilder
+    {
+        $actualCount = $this->getCount();
+        if (!empty($this->getSelect())) {
+            if ($distinct) {
+                $count = "DISTINCT ".$colName;
+            } else {
+                $count = $colName;
+            }
+        }
+        return $this->setCount($colName);
+    }
+
     private function isCol($item): bool
     {
         return in_array($item, $this->getCol());
@@ -311,9 +331,20 @@ class MBOBuilder extends DBManager
         return $this->orderBy;
     }
 
-    public function setOrderBy(array $orderBy): MBOBuilder
+    public function setOrderBy(array $orderBy): array
     {
         $this->orderBy = $orderBy;
+        return $this;
+    }
+
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    public function setCount(string $count): MBOBuilder
+    {
+        $this->count = $count;
         return $this;
     }
 }
