@@ -14,6 +14,8 @@ class MBOBuilder extends DBManager
 
     private $where = [];
 
+    private $orderBy = [];
+
     private $query;
 
     public function __construct()
@@ -60,11 +62,17 @@ class MBOBuilder extends DBManager
         }
         $stm = rtrim($stmt, ', ');
         $stm .= ' FROM ' . $this->getTableName();
-        $where = $this->buildWhere();
-        $stm = $stm . ' ' . $where[0];
+        if (!empty($this->getWhere())) {
+            $where = $this->buildWhere();
+            $stm = $stm . ' ' . $where[0];
+        }
+        if (!empty($this->getOrderBy())) {
+            $orderBy = $this->buildOrderBy();
+            $stm .= ' ' . $orderBy;
+        }
         $req = $this->getPdo();
         $request = $req->prepare($stm);
-        return $this->bindWhere($request, $where);
+        return !empty($this->getWhere()) ? $this->bindWhere($request, $where) : $request;
     }
 
     public function buildInsert() : \PDOStatement
@@ -130,6 +138,16 @@ class MBOBuilder extends DBManager
         }
         $stmt = rtrim($stmt, 'AND ');
         return [$stmt, $value];
+    }
+
+    private function buildOrderBy() : string
+    {
+        $stmt = 'ORDER BY ';
+        foreach ($this->getOrderBy() as $orderBy) {
+            $stmt.= $orderBy[0] . ' ' . $orderBy[1] . ', ';
+        }
+        $stmt = rtrim($stmt, ', ');
+        return $stmt;
     }
 
     private function bindWhere($pdo, $where): \PDOStatement
@@ -202,6 +220,21 @@ class MBOBuilder extends DBManager
         return $this->setWhere($actualWhere);
     }
 
+    public function ORDERBY(...$orderBy): MBOBuilder
+    {
+        $actualOrderBy = $this->getOrderBy();
+        foreach ($orderBy as $order) {
+            if ($this->isCol($order[0])) {
+                if (isset($order[1])) {
+                    $actualOrderBy[] = $order;
+                } else {
+                    $actualOrderBy[] = [$order[0], 'ASC'];
+                }
+            }
+        }
+        return $this->setOrderBy($actualOrderBy);
+    }
+
     private function isCol($item): bool
     {
         return in_array($item, $this->getCol());
@@ -270,6 +303,17 @@ class MBOBuilder extends DBManager
     public function setQuery(\PDOStatement $query): MBOBuilder
     {
         $this->query = $query;
+        return $this;
+    }
+
+    public function getOrderBy(): array
+    {
+        return $this->orderBy;
+    }
+
+    public function setOrderBy(array $orderBy): MBOBuilder
+    {
+        $this->orderBy = $orderBy;
         return $this;
     }
 }
