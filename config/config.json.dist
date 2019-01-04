@@ -8,6 +8,6 @@
   },
   "log": {
     "request.log": "./logs/request.log",
-    "error.log": "./logs/request.log"
+    "error.log": "./logs/error.log"
   },
 }
