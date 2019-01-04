@@ -9,6 +9,22 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         parent::__construct();
     }
 
+    public function getData()
+    {
+        $data = [];
+        foreach ($this->getCol() as $col) {
+            $func = 'get' . ucfirst($col);
+            $pos = strpos($func, '_');
+            while (!($pos === false)) {
+                $func[$pos + 1] = ucfirst($func[$pos + 1]);
+                $func = substr($func, 0, $pos) . substr($func, $pos + 1);
+                $pos = strpos($func, '_');
+            }
+            $data[$col] = $this->$func();
+        }
+        return $data;
+    }
+
     public function buildEntity(array $data): self
     {
         $entity = new $this;
@@ -47,6 +63,7 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
 
     public function getByCriteria(...$criteria)
     {
+        $this->clear();
         $allEntities = [];
         $this->SELECT('*');
         foreach ($criteria as $where) {
@@ -57,5 +74,28 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
             $allEntities[] = $this->buildEntity($data);
         }
         return $allEntities;
+    }
+
+    public function save(): self
+    {
+        $this->clear();
+        if (empty($this->getId())) {
+            $data = $this->getData();
+            foreach ($data as $key => $value) {
+                $this->INSERT([$key, $value]);
+            }
+            $this->buildQuery();
+            $this->getQuery();
+            $this->execute();
+        } else {
+            $data = $this->getData();
+            foreach ($data as $key => $value) {
+                $this->UPDATE([$key, $value]);
+            }
+            $this->WHERE(['id', '=', $data['id']]);
+            $this->buildQuery();
+            var_dump($this->execute());
+        }
+        return $this;
     }
 }

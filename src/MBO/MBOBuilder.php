@@ -91,6 +91,7 @@ class MBOBuilder extends DBManager
         }
         foreach ($this->getInsert() as $key => $value) {
             $cols[$value[0]] = $value[1];
+
         }
         $stmt = 'INSERT INTO `' . $this->getTableName() . '` ';
         $sqlKey = '(';
@@ -173,7 +174,9 @@ class MBOBuilder extends DBManager
         if (!$bool) {
             /////TODO log
         } else {
-            return $query->fetchAll($fetchStyle);
+            $result = $query->fetchAll($fetchStyle);
+            $this->clear();
+            return $result;
         }
 
     }
@@ -207,7 +210,7 @@ class MBOBuilder extends DBManager
 
     public function INSERT(...$inserted): MBOBuilder
     {
-        $actualInsert = $this->getSelect();
+        $actualInsert = $this->getInsert();
         foreach ($inserted as $item) {
             if ($this->isCol($item[0])) {
                 $actualInsert[] = [$item[0], $item[1]];
