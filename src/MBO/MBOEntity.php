@@ -45,4 +45,17 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $allEntities;
     }
 
+    public function getByCriteria(...$criteria)
+    {
+        $allEntities = [];
+        $this->SELECT('*');
+        foreach ($criteria as $where) {
+            $this->WHERE($where);
+        }
+        $result = $this->buildQuery()->execute();
+        foreach ($result as $data) {
+            $allEntities[] = $this->buildEntity($data);
+        }
+        return $allEntities;
+    }
 }

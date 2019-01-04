@@ -17,4 +17,4 @@ $clients = new clients();
 //$clients->buildQuery();
 //var_dump($clients->getQuery());
 //var_dump($clients->execute());
-var_dump($clients->getById(2));
+var_dump($clients->getByCriteria(["lastname", '=', 'Hurlorage']));
