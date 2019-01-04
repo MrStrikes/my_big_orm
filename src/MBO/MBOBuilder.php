@@ -2,7 +2,7 @@
 
 namespace MBO;
 
-class MBOBuilder extends DBManager
+abstract class MBOBuilder extends DBManager
 {
     private $select = [];
 

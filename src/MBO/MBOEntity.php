@@ -84,17 +84,17 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
             foreach ($data as $key => $value) {
                 $this->INSERT([$key, $value]);
             }
-            $this->buildQuery();
-            $this->getQuery();
-            $this->execute();
+            $this->buildQuery()
+                ->getQuery()
+                ->execute();
         } else {
             $data = $this->getData();
             foreach ($data as $key => $value) {
                 $this->UPDATE([$key, $value]);
             }
-            $this->WHERE(['id', '=', $data['id']]);
-            $this->buildQuery();
-            var_dump($this->execute());
+            $this->WHERE(['id', '=', $data['id']])
+                ->buildQuery()
+                ->execute();
         }
         return $this;
     }
