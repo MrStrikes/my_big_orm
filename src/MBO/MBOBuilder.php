@@ -41,7 +41,7 @@ abstract class MBOBuilder extends DBManager
 
     public function buildQuery() : MBOBuilder
     {
-        if (!empty($this->getSelect())) {
+        if (!empty($this->getSelect()) || !empty($this->getCount())) {
             $query = $this->buildSelect();
         } else if (!empty($this->getInsert())) {
             $query = $this->buildInsert();
@@ -50,8 +50,11 @@ abstract class MBOBuilder extends DBManager
         } else if (!empty($this->getDelete())) {
             $query = $this->buildDelete();
         } else {
+            $date = new \DateTime();
+            $log['date'] = $date->format('Y-m-d H:i:s');
+            $log["requestType"] = 'No request type found';
+            error_log(json_encode($log) . "\n", 3, $GLOBALS['MBO']['log']['error.log']);
             return $this;
-            //TODO LOG
         }
         $this->setQuery($query);
         return $this;
@@ -170,10 +173,37 @@ abstract class MBOBuilder extends DBManager
     public function execute($fetchStyle = 2)
     {
         $query = $this->getQuery();
+        $start_time = microtime(true);
         $bool = $query->execute();
-        if (!$bool) {
-            /////TODO log
+        $end_time = microtime(true);
+
+        $date = new \DateTime();
+        $log['date'] = $date->format('Y-m-d H:i:s');
+        $log['query'] = $this->getQuery()->queryString;
+        $log['param']['where'] = $this->getWhere();
+        if (!empty($this->getSelect()) || !empty($this->getCount())) {
+            $log['requestType'] = 'select';
+            $log['param']['select'] = $this->getSelect();
+            $log['param']['count'] = $this->getCount();
+        } else if (!empty($this->getInsert())) {
+            $log['requestType'] = 'insert';
+            $log['param']['insert'] = $this->getInsert();
+        } else if (!empty($this->getUpdate())) {
+            $log['requestType'] = 'update';
+            $log['param']['update'] = $this->getUpdate();
+        } else if (!empty($this->getDelete())) {
+            $log['requestType'] = 'delete';
+            $log['param']['delete'] = $this->getDelete();
         } else {
+            $log['requestType'] = "No request type found";
+        }
+        if (!$bool) {
+            $log['error'] = $query->errorInfo();
+            $log['error'][2] = utf8_encode($log['error'][2]);
+            error_log(json_encode($log) . "\n", 3, $GLOBALS['MBO']['log']['error.log']);
+        } else {
+            $log['executionTime'] = $end_time - $start_time;
+            error_log(json_encode($log) . "\n", 3, $GLOBALS['MBO']['log']['request.log']);
             $result = $query->fetchAll($fetchStyle);
             $this->clear();
             return $result;

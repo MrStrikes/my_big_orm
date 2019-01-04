@@ -11,11 +11,13 @@ $clients = new clients();
 //$clients->UPDATE(["lastname", "Maxx"], ["qdtht", "qfhdqfs"], ["address", "slt"]);
 //$clients->buildQuery()->execute();
 //$clients->SELECT("city", "phone");
-//$clients->COUNT("lastname", true)
-//    ->COUNT("dfgsdfh")
-//    ->COUNT("firstname");
+//$clients->WHERE(["id", "=", 29]);
+//$clients->DELETE(false);
+//$clients->COUNT("*");
 
-$clients = $clients->getById(2);
-var_dump($clients);
+//$clients = $clients->getById(2);
+//var_dump($clients);
 //$clients->deleteEntity();
+//$clients->buildQuery();
+//var_dump($clients->execute());
 
