@@ -98,4 +98,17 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         }
         return $this;
     }
+
+    public function deleteEntity()
+    {
+        $this->clear();
+        if (!empty($this->getId())) {
+            $this->DELETE(true)
+                ->WHERE(['id', '=', $this->getId()])
+                ->buildQuery()
+                ->execute();
+        } else {
+            return false;
+        }
+    }
 }

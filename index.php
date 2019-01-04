@@ -14,14 +14,8 @@ $clients = new clients();
 //$clients->COUNT("lastname", true)
 //    ->COUNT("dfgsdfh")
 //    ->COUNT("firstname");
-$clients
-    ->setId(27)
-    ->setLastname("lastname")
-    ->setFirstname("firstname")
-    ->setAddress("address")
-    ->setCity("city")
-    ->setCountryId(1)
-    ->setPhone("phone")
-    ->setEmail("email");
-$clients->save();
+
+$clients = $clients->getById(27);
+var_dump($clients);
+//$clients->deleteEntity();
 
