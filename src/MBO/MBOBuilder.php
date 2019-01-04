@@ -18,7 +18,7 @@ class MBOBuilder extends DBManager
 
     private $query;
 
-    private $count;
+    private $count = [];
 
     public function __construct()
     {
@@ -34,7 +34,8 @@ class MBOBuilder extends DBManager
             ->setDelete(false)
             ->setUpdate([])
             ->setInsert([])
-            ->setWhere([]);
+            ->setWhere([])
+            ->setCount([]);
         return $this;
     }
 
@@ -59,14 +60,22 @@ class MBOBuilder extends DBManager
     public function buildSelect() : \PDOStatement
     {
         $stmt = "SELECT ";
-        if (!empty($this->getCount())) {
-            $stmt .= "COUNT(".$this->getCount().")";
+        foreach ($this->getSelect() as $selects) {
+            $stmt .= "$selects, ";
         }
-        if (empty($this->getCount())) {
-            foreach ($this->getSelect() as $selects) {
-                $stmt .= $selects . ", ";
+        if (!empty($this->getCount())) {
+            foreach ($this->getCount() as $count) {
+                $stmt .= "COUNT($count), ";
             }
         }
+//        if (!empty($this->getCount())) {
+//            $stmt .= "COUNT(".$this->getCount().")";
+//        }
+//        if (empty($this->getCount())) {
+//            foreach ($this->getSelect() as $selects) {
+//                $stmt .= $selects . ", ";
+//            }
+//        }
         $stm = rtrim($stmt, ', ');
         $stm .= ' FROM ' . $this->getTableName();
         if (!empty($this->getWhere())) {
@@ -245,14 +254,14 @@ class MBOBuilder extends DBManager
     public function COUNT($colName = "*", $distinct = false): MBOBuilder
     {
         $actualCount = $this->getCount();
-        if (!empty($this->getSelect())) {
+        if ($this->isCol($colName) ||$colName === '*') {
             if ($distinct) {
-                $count = "DISTINCT ".$colName;
+                $actualCount[] = "DISTINCT $colName";
             } else {
-                $count = $colName;
+                $actualCount[] = $colName;
             }
         }
-        return $this->setCount($colName);
+        return $this->setCount($actualCount);
     }
 
     private function isCol($item): bool
@@ -337,12 +346,12 @@ class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function getCount()
+    public function getCount(): array
     {
         return $this->count;
     }
 
-    public function setCount(string $count): MBOBuilder
+    public function setCount(array $count): MBOBuilder
     {
         $this->count = $count;
         return $this;
