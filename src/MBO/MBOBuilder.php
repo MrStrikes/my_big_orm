@@ -68,14 +68,6 @@ class MBOBuilder extends DBManager
                 $stmt .= "COUNT($count), ";
             }
         }
-//        if (!empty($this->getCount())) {
-//            $stmt .= "COUNT(".$this->getCount().")";
-//        }
-//        if (empty($this->getCount())) {
-//            foreach ($this->getSelect() as $selects) {
-//                $stmt .= $selects . ", ";
-//            }
-//        }
         $stm = rtrim($stmt, ', ');
         $stm .= ' FROM ' . $this->getTableName();
         if (!empty($this->getWhere())) {
