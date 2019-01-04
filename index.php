@@ -17,5 +17,4 @@ $clients = new clients();
 //$clients->buildQuery();
 //var_dump($clients->getQuery());
 //var_dump($clients->execute());
-$clients->getById(3);
-var_dump($clients);
+var_dump($clients->getById(2));

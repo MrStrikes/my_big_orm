@@ -9,8 +9,10 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         parent::__construct();
     }
 
-    public function buildEntity(array $data) {
-        foreach ($this->getCol() as $col) {
+    public function buildEntity(array $data): self
+    {
+        $entity = new $this;
+        foreach ($entity->getCol() as $col) {
             $func = 'set' . ucfirst($col);
             $pos = strpos($func, '_');
             while (!($pos === false)) {
@@ -18,18 +20,29 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
                 $func = substr($func, 0, $pos) . substr($func, $pos + 1);
                 $pos = strpos($func, '_');
             }
-            $this->$func($data[$col]);
+            $entity->$func($data[$col]);
         }
-        return $this;
+        return $entity;
     }
 
-    public function getById($id, $fetchStyle = 2) {
+    public function getById($id, $fetchStyle = 2): self
+    {
         $this
             ->clear()
             ->SELECT('*')
             ->WHERE(['id', '=', $id])
             ->buildQuery();
         return $this->buildEntity($this->execute($fetchStyle)[0]);
+    }
+
+    public function getAll(): array
+    {
+        $result = $this->clear()->SELECT('*')->buildQuery()->execute();
+        $allEntities = [];
+        foreach ($result as $data) {
+            $allEntities[] = $this->buildEntity($data);
+        }
+        return $allEntities;
     }
 
 }
