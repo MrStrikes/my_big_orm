@@ -4,9 +4,12 @@ namespace MBO;
 
 abstract class MBOEntity extends MBOBuilder implements EntityInterface
 {
-    public function __construct()
+    public function __construct($id = null)
     {
         parent::__construct();
+        if ($id !== null) {
+            $this->getById($id, false);
+        }
     }
 
     public function getData()
@@ -25,9 +28,9 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $data;
     }
 
-    public function buildEntity(array $data): self
+    public function buildEntity(array $data, $newEntity = true): self
     {
-        $entity = new $this;
+        $entity = $newEntity ? new $this : $this;
         foreach ($entity->getCol() as $col) {
             $func = 'set' . ucfirst($col);
             $pos = strpos($func, '_');
@@ -41,14 +44,14 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $entity;
     }
 
-    public function getById($id, $fetchStyle = 2): self
+    public function getById($id, $newEntity = true): self
     {
         $this
             ->clear()
             ->SELECT('*')
             ->WHERE(['id', '=', $id])
             ->buildQuery();
-        return $this->buildEntity($this->execute($fetchStyle)[0]);
+        return $this->buildEntity($this->execute(2, false)[0], $newEntity);
     }
 
     public function getAll(): array

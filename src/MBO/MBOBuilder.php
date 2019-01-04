@@ -170,7 +170,7 @@ abstract class MBOBuilder extends DBManager
         return $pdo;
     }
 
-    public function execute($fetchStyle = 2)
+    public function execute($fetchStyle = 2, $clear = true)
     {
         $query = $this->getQuery();
         $start_time = microtime(true);
@@ -201,11 +201,15 @@ abstract class MBOBuilder extends DBManager
             $log['error'] = $query->errorInfo();
             $log['error'][2] = utf8_encode($log['error'][2]);
             error_log(json_encode($log) . "\n", 3, $GLOBALS['MBO']['log']['error.log']);
+            return false;
         } else {
             $log['executionTime'] = $end_time - $start_time;
             error_log(json_encode($log) . "\n", 3, $GLOBALS['MBO']['log']['request.log']);
             $result = $query->fetchAll($fetchStyle);
-            $this->clear();
+
+            if ($clear) {
+                $this->clear();
+            }
             return $result;
         }
 
