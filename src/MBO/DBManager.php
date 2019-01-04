@@ -10,7 +10,7 @@ class DBManager
     public function __construct()
     {
 
-        $params = json_decode(file_get_contents($GLOBALS['config']), true);
+        $params = $GLOBALS['MBO'];
         $address = $params['db']['host'];
         if ($params['db']['port']) {
             $address .= ':' . $params['db']['port'];

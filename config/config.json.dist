@@ -5,5 +5,9 @@
     "password": "user password",
     "host": "127.0.0.1",
     "port": null
-  }
+  },
+  "log": {
+    "request.log": "./logs/request.log",
+    "error.log": "./logs/request.log"
+  },
 }

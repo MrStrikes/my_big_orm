@@ -4,7 +4,7 @@ require_once "vendor/autoload.php";
 
 use test\clients;
 
-$GLOBALS['config'] = "./config/config.json";
+$GLOBALS['MBO'] = json_decode(file_get_contents('./config/config.json'), true);
 
 $clients = new clients();
 //$clients->INSERT(["lastname", "Max"], ["firstname", "ime"], ["address", "adres"], ["city", "citi"], ["country_id", 42], ["phone", "0102030405"], ["email", "e@ma.il"]);
@@ -15,7 +15,7 @@ $clients = new clients();
 //    ->COUNT("dfgsdfh")
 //    ->COUNT("firstname");
 
-$clients = $clients->getById(27);
+$clients = $clients->getById(2);
 var_dump($clients);
 //$clients->deleteEntity();
 
