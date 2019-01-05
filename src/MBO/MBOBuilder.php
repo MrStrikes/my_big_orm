@@ -144,11 +144,19 @@ abstract class MBOBuilder extends DBManager
     {
         $stmt = 'WHERE ';
         $value = [];
+        $query = '';
+        $opeList = [];
         foreach ($this->getWhere() as $index => $condition) {
-            $stmt .= $condition[0] . ' ' . $condition[1] . ' :wh' . $index . ' AND ';
+            if (!in_array($condition[3], $opeList)) {
+                $opeList[] = $condition[3];
+            }
+            $query .= " $condition[3] " . $condition[0] . ' ' . $condition[1] . ' :wh' . $index;
             $value[$index] = $condition[2];
         }
-        $stmt = rtrim($stmt, 'AND ');
+        foreach ($opeList as $ope) {
+            $query = trim($query, " $ope ");
+        }
+        $stmt .= $query;
         return [$stmt, $value];
     }
 
@@ -164,7 +172,7 @@ abstract class MBOBuilder extends DBManager
 
     private function bindWhere($pdo, $where): \PDOStatement
     {
-        foreach ($where[1] as $key => $value) {
+        foreach ($where[1] as $key => &$value) {
             $pdo->bindParam(":wh$key", $value);
         }
         return $pdo;
@@ -259,7 +267,8 @@ abstract class MBOBuilder extends DBManager
         $actualWhere = $this->getWhere();
         foreach ($conditions as $condition) {
             if ($this->isCol($condition[0])) {
-                $actualWhere[] = [$condition[0], $condition[1], $condition[2]];
+                $ope = isset($condition[3]) ? $condition[3] : 'AND';
+                $actualWhere[] = [$condition[0], $condition[1], $condition[2], $ope];
             }
         }
         return $this->setWhere($actualWhere);
