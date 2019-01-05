@@ -23,4 +23,10 @@ interface EntityInterface
      */
     public function getId();
 
+    /**
+     * set entity id
+     * @return mixed
+     */
+    public function setId();
+
 }

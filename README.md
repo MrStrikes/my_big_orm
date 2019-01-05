@@ -14,6 +14,7 @@ Attention `MBOEntity` implemente[`EntityInterface`.php](https://github.com/MrStr
 * `getCol()` retourne un tableau des noms de colonne dans votre DB. Chaque nom dans le tableau correspond à une variable dans votre entité, chacune de ces variable doit posséder un getter et un setter en [camelCase](https://fr.wikipedia.org/wiki/Camel_case) (ex: `public function getCountryId(){}`)
 * `getTableName()` retourne le nom de votre tableau dans votre DB.
 * `getId()` retourne l'id de votre entité  
+* `setId()` définit un nouvel id pour l'entité
 
 Vous pouvez maintenant utiliser MBO sur votre entité.
 
