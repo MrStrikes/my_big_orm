@@ -83,7 +83,7 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
     public function save(): self
     {
         $this->clear();
-        if (empty($this->getId())) {
+        if (!$this->exist(['id', '=', $this->getId()])) {
             $data = $this->getData();
             foreach ($data as $key => $value) {
                 $this->INSERT([$key, $value]);
@@ -114,5 +114,15 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         } else {
             return false;
         }
+    }
+
+    public function exist(...$where)
+    {
+        $this->clear()->SELECT('*');
+        foreach ($where as $condition) {
+            $this->WHERE($condition);
+        }
+        $result = $this->buildQuery()->execute();
+        return !empty($result);
     }
 }
