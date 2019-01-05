@@ -20,15 +20,19 @@ abstract class MBOBuilder extends DBManager
 
     private $count = [];
 
+    /**
+     * MBOBuilder constructor.
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-     * @return $this
+     * Reset builder param
+     * @return MBOBuilder
      */
-    public function clear() : MBOBuilder {
+    public function clear(): self {
         $this
             ->setSelect([])
             ->setDelete(false)
@@ -39,7 +43,12 @@ abstract class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function buildQuery() : MBOBuilder
+    /**
+     * Call the good builder function
+     * @return MBOBuilder
+     * @throws \Exception
+     */
+    public function buildQuery(): self
     {
         if (!empty($this->getSelect()) || !empty($this->getCount())) {
             $query = $this->buildSelect();
@@ -60,7 +69,11 @@ abstract class MBOBuilder extends DBManager
         return $this;
     }
 
-    public function buildSelect() : \PDOStatement
+    /**
+     * Build select PDO, with where, count and order by
+     * @return \PDOStatement
+     */
+    public function buildSelect(): \PDOStatement
     {
         $stmt = "SELECT ";
         foreach ($this->getSelect() as $selects) {
@@ -86,7 +99,11 @@ abstract class MBOBuilder extends DBManager
         return !empty($this->getWhere()) ? $this->bindWhere($request, $where) : $request;
     }
 
-    public function buildInsert() : \PDOStatement
+    /**
+     * Build insert PDO
+     * @return \PDOStatement
+     */
+    public function buildInsert(): \PDOStatement
     {
         $cols = array_flip($this->getCol());
         foreach ($cols as $key => $value) {
@@ -115,7 +132,11 @@ abstract class MBOBuilder extends DBManager
         return $request;
     }
 
-    public function buildUpdate() : \PDOStatement
+    /**
+     * Build update PDO with where
+     * @return \PDOStatement
+     */
+    public function buildUpdate(): \PDOStatement
     {
         $stmt = 'UPDATE `' . $this->getTableName() . '` SET ';
         foreach ($this->getUpdate() as $index => $update) {
@@ -131,7 +152,11 @@ abstract class MBOBuilder extends DBManager
         return $this->bindWhere($request, $where);
     }
 
-    public function buildDelete() : \PDOStatement
+    /**
+     * Build Delete PDO with where
+     * @return \PDOStatement
+     */
+    public function buildDelete(): \PDOStatement
     {
         $stmt = 'DELETE FROM `' . $this->getTableName() . '`';
         $where = $this->buildWhere();
@@ -140,7 +165,11 @@ abstract class MBOBuilder extends DBManager
         return $this->bindWhere($request, $where);
     }
 
-    private function buildWhere() : array
+    /**
+     * Build Where
+     * @return array[query, value to bind]
+     */
+    private function buildWhere(): array
     {
         $stmt = 'WHERE ';
         $value = [];
@@ -160,7 +189,11 @@ abstract class MBOBuilder extends DBManager
         return [$stmt, $value];
     }
 
-    private function buildOrderBy() : string
+    /**
+     * build order by
+     * @return string
+     */
+    private function buildOrderBy(): string
     {
         $stmt = 'ORDER BY ';
         foreach ($this->getOrderBy() as $orderBy) {
@@ -170,6 +203,12 @@ abstract class MBOBuilder extends DBManager
         return $stmt;
     }
 
+    /**
+     * Bind param for where
+     * @param $pdo
+     * @param $where (from buildWhere())
+     * @return \PDOStatement
+     */
     private function bindWhere($pdo, $where): \PDOStatement
     {
         foreach ($where[1] as $key => &$value) {
@@ -178,6 +217,13 @@ abstract class MBOBuilder extends DBManager
         return $pdo;
     }
 
+    /**
+     * exucute query in $this->getQuery()
+     * @param int $fetchStyle
+     * @param bool $clear
+     * @return array|bool
+     * @throws \Exception
+     */
     public function execute($fetchStyle = 2, $clear = true)
     {
         $query = $this->getQuery();
@@ -223,7 +269,12 @@ abstract class MBOBuilder extends DBManager
 
     }
 
-    public function SELECT(...$selected): MBOBuilder
+    /**
+     * Add param select to $this->getSelect()
+     * @param mixed ...$selected
+     * @return MBOBuilder
+     */
+    public function SELECT(...$selected): self
     {
         $actualSelect = $this->getSelect();
         foreach ($selected as $item) {
@@ -234,12 +285,21 @@ abstract class MBOBuilder extends DBManager
         return $this->setSelect($actualSelect);
     }
 
-    public function DELETE(bool $bool): MBOBuilder
+    /**
+     * @param bool $bool
+     * @return MBOBuilder
+     */
+    public function DELETE(bool $bool): self
     {
         return $this->setDelete($bool);
     }
 
-    public function UPDATE(...$updated): MBOBuilder
+    /**
+     * Add param update to $this->getUpdate()
+     * @param mixed ...$updated
+     * @return MBOBuilder
+     */
+    public function UPDATE(...$updated): self
     {
         $actualUpdate = $this->getUpdate();
         foreach ($updated as $item) {
@@ -250,7 +310,12 @@ abstract class MBOBuilder extends DBManager
         return $this->setUpdate($actualUpdate);
     }
 
-    public function INSERT(...$inserted): MBOBuilder
+    /**
+     * add param insert to $this->getInsert()
+     * @param mixed ...$inserted
+     * @return MBOBuilder
+     */
+    public function INSERT(...$inserted): self
     {
         $actualInsert = $this->getInsert();
         foreach ($inserted as $item) {
@@ -262,7 +327,12 @@ abstract class MBOBuilder extends DBManager
 
     }
 
-    public function WHERE(...$conditions): MBOBuilder
+    /**
+     * add param where to $this->getWhere()
+     * @param mixed ...$conditions
+     * @return MBOBuilder
+     */
+    public function WHERE(...$conditions): self
     {
         $actualWhere = $this->getWhere();
         foreach ($conditions as $condition) {
@@ -274,7 +344,12 @@ abstract class MBOBuilder extends DBManager
         return $this->setWhere($actualWhere);
     }
 
-    public function ORDERBY(...$orderBy): MBOBuilder
+    /**
+     * add param order by to $this->getOrderBy()
+     * @param mixed ...$orderBy
+     * @return MBOBuilder
+     */
+    public function ORDERBY(...$orderBy): self
     {
         $actualOrderBy = $this->getOrderBy();
         foreach ($orderBy as $order) {
@@ -289,7 +364,13 @@ abstract class MBOBuilder extends DBManager
         return $this->setOrderBy($actualOrderBy);
     }
 
-    public function COUNT($colName = "*", $distinct = false): MBOBuilder
+    /**
+     * add param count to $this->getCount()
+     * @param string $colName
+     * @param bool $distinct
+     * @return MBOBuilder
+     */
+    public function COUNT($colName = "*", $distinct = false): self
     {
         $actualCount = $this->getCount();
         if ($this->isCol($colName) ||$colName === '*') {
@@ -302,94 +383,156 @@ abstract class MBOBuilder extends DBManager
         return $this->setCount($actualCount);
     }
 
+    /**
+     * Check if $item is correct column with the array define by user in $this->getCol()
+     * @param $item
+     * @return bool
+     */
     private function isCol($item): bool
     {
         return in_array($item, $this->getCol());
     }
 
+    /**
+     * @return array
+     */
     public function getSelect(): array
     {
         return $this->select;
     }
 
-    public function setSelect($select): MBOBuilder
+    /**
+     * @param $select
+     * @return MBOBuilder
+     */
+    public function setSelect($select): self
     {
         $this->select = $select;
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function getDelete(): bool
     {
         return $this->delete;
     }
 
-    public function setDelete(bool $delete): MBOBuilder
+    /**
+     * @param bool $delete
+     * @return MBOBuilder
+     */
+    public function setDelete(bool $delete): self
     {
         $this->delete = $delete;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getUpdate(): array
     {
         return $this->update;
     }
 
-    public function setUpdate($update): MBOBuilder
+    /**
+     * @param $update
+     * @return MBOBuilder
+     */
+    public function setUpdate($update): self
     {
         $this->update = $update;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getInsert(): array
     {
         return $this->insert;
     }
 
-    public function setInsert($insert): MBOBuilder
+    /**
+     * @param $insert
+     * @return MBOBuilder
+     */
+    public function setInsert($insert): self
     {
         $this->insert = $insert;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getWhere(): array
     {
         return $this->where;
     }
 
-    public function setWhere(array $where): MBOBuilder
+    /**
+     * @param array $where
+     * @return MBOBuilder
+     */
+    public function setWhere(array $where): self
     {
         $this->where = $where;
         return $this;
     }
 
+    /**
+     * @return \PDOStatement
+     */
     public function getQuery(): \PDOStatement
     {
         return $this->query;
     }
 
-    public function setQuery(\PDOStatement $query): MBOBuilder
+    /**
+     * @param \PDOStatement $query
+     * @return MBOBuilder
+     */
+    public function setQuery(\PDOStatement $query): self
     {
         $this->query = $query;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getOrderBy(): array
     {
         return $this->orderBy;
     }
 
-    public function setOrderBy(array $orderBy): MBOBuilder
+    /**
+     * @param array $orderBy
+     * @return MBOBuilder
+     */
+    public function setOrderBy(array $orderBy): self
     {
         $this->orderBy = $orderBy;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getCount(): array
     {
         return $this->count;
     }
 
-    public function setCount(array $count): MBOBuilder
+
+    /**
+     * @param array $count
+     * @return MBOBuilder
+     */
+    public function setCount(array $count): self
     {
         $this->count = $count;
         return $this;

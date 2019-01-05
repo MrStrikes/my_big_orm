@@ -4,6 +4,10 @@ namespace MBO;
 
 abstract class MBOEntity extends MBOBuilder implements EntityInterface
 {
+    /**
+     * MBOEntity constructor.
+     * @param null $id
+     */
     public function __construct($id = null)
     {
         parent::__construct();
@@ -13,6 +17,10 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         }
     }
 
+    /**
+     * get data from self entity
+     * @return array
+     */
     public function getData()
     {
         $data = [];
@@ -29,6 +37,12 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $data;
     }
 
+    /**
+     * create or complete entity with $data
+     * @param array $data
+     * @param bool $newEntity
+     * @return MBOEntity
+     */
     public function buildEntity(array $data, $newEntity = true): self
     {
         $entity = $newEntity ? new $this : $this;
@@ -45,6 +59,13 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $entity;
     }
 
+    /**
+     * Get entity by id
+     * @param $id
+     * @param bool $newEntity
+     * @return MBOEntity
+     * @throws \Exception
+     */
     public function getById($id, $newEntity = true): self
     {
         $this
@@ -55,6 +76,11 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $this->buildEntity($this->execute(2, false)[0], $newEntity);
     }
 
+    /**
+     * get all entity
+     * @return array
+     * @throws \Exception
+     */
     public function getAll(): array
     {
         $result = $this->clear()->SELECT('*')->buildQuery()->execute();
@@ -65,6 +91,12 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $allEntities;
     }
 
+    /**
+     * get entity with critera (SELECT param)
+     * @param mixed ...$criteria
+     * @return array
+     * @throws \Exception
+     */
     public function getByCriteria(...$criteria)
     {
         $this->clear();
@@ -80,6 +112,11 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $allEntities;
     }
 
+    /**
+     * create or update entity if id found in DB
+     * @return MBOEntity
+     * @throws \Exception
+     */
     public function save(): self
     {
         $this->clear();
@@ -103,6 +140,11 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return $this;
     }
 
+    /**
+     * Delete entity in DB with $this->getId()
+     * @return bool
+     * @throws \Exception
+     */
     public function deleteEntity()
     {
         $this->clear();
@@ -116,6 +158,12 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         }
     }
 
+    /**
+     * check if actual entity exist in db or can take $where param to check this param
+     * @param mixed ...$where
+     * @return bool
+     * @throws \Exception
+     */
     public function exist(...$where)
     {
         if (empty($where)) {
@@ -129,6 +177,11 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         return !empty($result);
     }
 
+    /**
+     * get the number of entity in db
+     * @return mixed
+     * @throws \Exception
+     */
     public function countEntity()
     {
         $result = $this->clear()->COUNT('*')->buildQuery()->execute();
