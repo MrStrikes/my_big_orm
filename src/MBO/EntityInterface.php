@@ -27,6 +27,6 @@ interface EntityInterface
      * set entity id
      * @return mixed
      */
-    public function setId();
+    public function setId($id);
 
 }
