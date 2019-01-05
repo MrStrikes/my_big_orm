@@ -118,31 +118,3 @@ $client->DELETE(true)
 
 Vous pourrez trouver un exemple d'entité [ici](https://github.com/MrStrikes/my_big_orm/blob/master/src/test/clients.php) avec le [tableau correspondant dans la db](https://github.com/MrStrikes/my_big_orm/blob/master/src/test/clients.sql).
 Et voici [un fichier](https://github.com/MrStrikes/my_big_orm/blob/master/index.php) qui utilise quelques fonctionnalitées de l'entité d'exemple.
-
-
-
-```php
-<?php
-
-use User;
-
-$id = 42;
-$user = new User($id); // get user with id 42
-$user->firtstname = 'Maxime';
-$user->save();
-
-$newUser = new User();
-$newUser->firstname = 'Wassim';
-$newUser->lastname = 'Tacos';
-$newUser->country_id = 1;
-$newUser->save();
-
-$userToDelete = new User(42);
-$userToDelete->delete();
-
-$selectUsers = new MBOQuery('user');
-$selectUsers->select('id');
-$selectUsers->where('firstname = Maxime');
-$selectUsers->orderBy('id');
-$users = $selectUsers->execute();
-```
