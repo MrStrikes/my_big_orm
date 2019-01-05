@@ -93,7 +93,7 @@ La fonction `clear()` vide les parametres select,update,where,insert,delete,orde
 <?php
 $client = new clients();
 $client->INSERT(["lastname", "value"], ["firstname", "value"], ["address", "value"], ["city", "value"], ["country_id", "value"], ["phone", "value"], ["email", "value"])
-    ->buimdQuery()->execute();
+    ->buildQuery()->execute();
 ?>
 ```
 `INSERT()` prend un parametre des tableaux des valeurs à insérer: `["nom de la colonne", "valeur"]`.  
