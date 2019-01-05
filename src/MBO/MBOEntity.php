@@ -118,6 +118,9 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
 
     public function exist(...$where)
     {
+        if (empty($where)) {
+            $where[] = ['id', '=', $this->getId()];
+        }
         $this->clear()->SELECT('*');
         foreach ($where as $condition) {
             $this->WHERE($condition);
