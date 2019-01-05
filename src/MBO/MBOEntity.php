@@ -125,4 +125,10 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         $result = $this->buildQuery()->execute();
         return !empty($result);
     }
+
+    public function countEntity()
+    {
+        $result = $this->clear()->COUNT('*')->buildQuery()->execute();
+        return $result[0]['COUNT(*)'];
+    }
 }
