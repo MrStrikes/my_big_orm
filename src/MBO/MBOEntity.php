@@ -128,6 +128,7 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
             $this->buildQuery()
                 ->getQuery()
                 ->execute();
+            $this->setId($this->getPdo()->lastInsertId());
         } else {
             $data = $this->getData();
             foreach ($data as $key => $value) {
