@@ -9,6 +9,7 @@ abstract class MBOEntity extends MBOBuilder implements EntityInterface
         parent::__construct();
         if ($id !== null) {
             $this->getById($id, false);
+            $this->clear();
         }
     }
 
